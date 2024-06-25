@@ -1,0 +1,2 @@
+这个一个stable-diffusion-webui的插件，用于自定义修改UI颜色
+实际上是对gradio库的装饰器做修改，sd-webui界面就是使用的该库
