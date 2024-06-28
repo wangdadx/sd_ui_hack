@@ -3,9 +3,9 @@
 
 
 使用方法：<br>
-到sd扩展页面-从网址安装-输入网页 git clone https://github.com/wangdadx/sd_ui_hack.git 即可<br>
+到sd扩展页面-从网址安装-输入网页https://github.com/wangdadx/sd_ui_hack.git 即可<br>
 <br>
-![QQ浏览器截图20240626003233](https://github.com/wangdadx/sd_ui_hack/assets/135070647/0a557c4c-c4e2-497a-a4ef-48254eee2284)
+
 <br>
 插件：<br>
 <br>
