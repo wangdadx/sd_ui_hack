@@ -3,7 +3,7 @@
 <br>
 使用方法：
 <br>
-到sd扩展页面-从网址安装-输入网页https://github.com/wangdadx/sd_ui_hack.git 即可<br>
+下载到stable-diffusion-webui的extensions文件夹即可
 <br>
 <br>
 插件：
