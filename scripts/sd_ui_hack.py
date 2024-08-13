@@ -12,7 +12,7 @@ from modules.ui_components import ResizeHandleRow
 
 def keep_yushe(u_id,lis):#预设保存
     global shuju,data_id
-    map_=shuju['_原始预设'].copy()
+    map_=shuju['__原始预设__'].copy()
     shu=0;lis_=lis[:-2]
     for i in map_.keys():
         if i=='base':
@@ -72,16 +72,36 @@ def yushe_lis():#获取预设列表
         lis.append(i)
     return lis
 def yushe_user(*lis):#自定义预设保存
+    global shuju,yushe_list
     if lis[0]=='':
         return'请输入名字再试!!!!!'
     else:
         keep_yushe(lis[0],lis[1:])
+        shuju=shuju_hq()
+        yushe_list=list(shuju.keys())
         return '自定义预设已保存'
-
+def shuju_hq():
+    shuju={}
+    for file in glob.glob(f'{data_id}\\*.json'):#获取全部预设文件
+        with open(file, 'r') as f:  
+            loaded_data = json.load(f)  
+            shuju[file.split('\\')[-1].split('.')[0]]=loaded_data
+    return shuju
 def keep(*lis):#go
-    seek=keep_yushe('_当前预设',lis)
+    seek=keep_yushe('_当前预设_',lis)
     data_th(seek)
     return '设置成功'
+def yushe_del(name):
+    global shuju,yushe_list
+    if name=='__原始预设__':
+        return '不能删除原始预设!!!!!'
+    elif name=='_当前预设_':
+        return '不能删除当前预设!!!!!'
+    else:
+        os.remove(f'{data_id}\\{name}.json')
+        shuju=shuju_hq()
+        yushe_list=list(shuju.keys())
+        return '删除成功'
 
 #文件地址
 colors_id=f"{site.getsitepackages()[1]}\\gradio\\themes\\utils\\colors.py"
@@ -91,16 +111,13 @@ data_id=f'{os.path.dirname(os.path.dirname(os.path.abspath(__file__)))}\\data'#�
 
 index_2=['self.background_fill_primary = background_fill_primary or getattr\\(\n(.*?)\n        \\)','self, "background_primary", ']#文件2，正则索引
 index_3=['input_border_width="1px",\n(.*?),\n','input_background_fill=']#文件3，正则索引
-shuju={}
-for file in glob.glob(f'{data_id}\\*.json'):#获取全部预设文件
-    with open(file, 'r') as f:  
-        loaded_data = json.load(f)  
-        shuju[file.split('\\')[-1].split('.')[0]]=loaded_data
-ch_yushe=yushe('_当前预设')
+shuju=shuju_hq()
+ch_yushe=yushe('_当前预设_')
 
 def on_ui_tabs():
     with gr.Blocks() as demo:
         with gr.Tab("界面颜色设置") as clean_up_tab, ResizeHandleRow(equal_height=False):
+            yushe_list=list(shuju.keys())
             with gr.Row():
                 txt_1_1 = gr.ColorPicker(value=ch_yushe[0],label='生成键框上半截色')
                 txt_1_3 = gr.ColorPicker(value=ch_yushe[1],label='生成键框下半截色')
@@ -125,7 +142,9 @@ def on_ui_tabs():
                 txt_2= gr.ColorPicker(value=ch_yushe[15],label='主体背景填充色')
                 error=gr.Textbox(value='',label='信息')
             with gr.Row():
-                drop=gr.Dropdown(choices=shuju.keys(),label='预设选择',value=None)
+                drop=gr.Dropdown(choices=yushe_list,label='预设选择',value=None)
+                btn_del= gr.Button("删除预设")
+            with gr.Row():
                 btn= gr.Button("确认使用设定")
             with gr.Accordion("自定义预设", open=False):
                 with gr.Row():
@@ -139,9 +158,8 @@ def on_ui_tabs():
             drop.change(fn=yushe, inputs=drop, outputs=data_1)
             btn.click(keep, inputs=data_1, outputs=error)
             btn_.click(yushe_user, inputs=[name]+data_1, outputs=error)
+            btn_del.click(yushe_del, inputs=drop, outputs=error)
 
-# demo.launch()
-        
         return (demo, "sd_ui_hack",'112'),
 
 
